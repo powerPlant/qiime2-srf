@@ -1,0 +1,9 @@
+Bootstrap: docker
+From: qiime2/core:2019.1
+
+%labels
+Maintainer tejas.sevak@plantandfood.co.nz
+Version 2019.1
+
+%runscript
+  qiime "$@"
