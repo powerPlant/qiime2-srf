@@ -6,4 +6,4 @@ Maintainer tejas.sevak@plantandfood.co.nz
 Version 2018.11
 
 %runscript
-  qiime "$@"
+  exec qiime "$@"
