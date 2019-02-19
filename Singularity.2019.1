@@ -5,5 +5,8 @@ From: qiime2/core:2019.1
 Maintainer tejas.sevak@plantandfood.co.nz
 Version 2019.1
 
+%post
+  chmod 775 /home/qiime2/q2cli/cache/completion.sh
+
 %runscript
   exec qiime "$@"
