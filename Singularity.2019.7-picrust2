@@ -17,4 +17,9 @@ Version 2019.1
   unset XDG_CONFIG_HOME
 
 %runscript
-  exec qiime "$@"
+if [ -x /opt/conda/envs/qiime2-2019.7/bin/$SINGULARITY_NAME ]; then
+    exec $SINGULARITY_NAME "$@"
+else
+  /bin/echo -e "This Singularity image cannot provide a single entrypoint. Please use \"singularity exec $SINGULARITY_NAME <cmd>\", where <cmd> is one of the following:\n"
+  exec echo biom qiime
+fi
