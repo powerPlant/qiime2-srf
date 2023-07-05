@@ -5,7 +5,7 @@ pipeline {
     gitBranch = "master"
     appRecipe = "Apptainer"
     appImage = "qiime2"
-    appVersion = "2023.2"
+    appVersion = "2023.5"
  }
 
 agent { label 'apptainer' }
