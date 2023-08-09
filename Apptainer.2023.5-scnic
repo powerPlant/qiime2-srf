@@ -1,0 +1,57 @@
+Bootstrap: docker
+From: ubuntu:jammy
+
+%labels
+Maintainer marty.hickman@plantandfood.co.nz
+Version 2023.5-scnic
+
+%post
+export DEBIANFRONTEND=noninteractive
+export TZ="Pacific/Auckland"
+ln -fs /usr/share/zoneinfo/Pacific/Auckland /etc/localtime
+apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    git
+
+bash << EOF
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+cd /tmp
+
+# MINICONDA
+curl -sLO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+bash Miniconda3-latest-Linux-x86_64.sh -bp /opt/miniconda3
+. /opt/miniconda3/etc/profile.d/conda.sh
+
+# QIIME2
+curl -sLO https://data.qiime2.org/distro/core/qiime2-2023.5-py38-linux-conda.yml
+conda env create -n qiime2-2023.5 --file qiime2-2023.5-py38-linux-conda.yml
+conda activate qiime2-2023.5
+
+# SCNIC
+pip install scnic
+pip install git+https://github.com/lozuponelab/q2-SCNIC.git
+qiime dev refresh-cache
+
+# CLEANUP
+apt -y purge git
+apt -y autoremove
+
+EOF
+
+%environment
+export LC_ALL=C.UTF-8
+export LANG=C.UTF-8
+
+%runscript
+if [ -x /opt/miniconda3/envs/qiime2-2023.5/bin/$APPTAINER_NAME ]; then
+    bash -c "\
+    . /opt/miniconda3/etc/profile.d/conda.sh
+    conda activate qiime2-2023.5
+    exec $APPTAINER_NAME $@
+    "
+else
+  /bin/echo -e "This Apptainer image cannot provide a single entrypoint. Please use \"apptainer exec $APPTAINER_NAME <cmd>\", where <cmd> is one of the following:\n"
+  exec echo biom qiime
+fi
