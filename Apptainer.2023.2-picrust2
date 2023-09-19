@@ -1,0 +1,25 @@
+Bootstrap: docker
+From: quay.io/qiime2/core:2023.2
+
+%labels
+Maintainer marty.hickman@plantandfood.co.nz
+Version 2023.2-picrust2
+
+%post -c /bin/bash
+  chmod 777 /home/qiime2/q2cli/cache/completion.sh
+  export LC_ALL=C.UTF-8
+  export LANG=C.UTF-8
+  source /opt/conda/bin/activate qiime2-2023.2
+  conda install -y -c conda-forge -c bioconda -c gavinmdouglas q2-picrust2=2023.2
+
+%environment
+  unset HOME
+  unset XDG_CONFIG_HOME
+
+%runscript
+if [ -x /opt/conda/envs/qiime2-2023.2/bin/$APPTAINER_NAME ]; then
+    exec $APPTAINER_NAME "$@"
+else
+  /bin/echo -e "This Apptainer image cannot provide a single entrypoint. Please use \"apptainer exec $APPTAINER_NAME <cmd>\", where <cmd> is one of the following:\n"
+  exec echo biom qiime
+fi
