@@ -1,0 +1,22 @@
+Bootstrap: docker
+From: quay.io/qiime2/amplicon:2024.10
+
+%labels
+Maintainer jian.boey@plantandfood.co.nz
+Version 2024.10-itsxpress
+
+%post
+  chmod 775 /home/qiime2/q2cli/cache/completion.sh
+  export LC_ALL=C.UTF-8
+  export LANG=C.UTF-8
+  source /opt/conda/bin/activate qiime2-2023.10
+  conda install -y -c bioconda -c conda-forge itsxpress
+  qiime dev refresh-cache
+
+%runscript
+if [ -x /opt/conda/envs/qiime2-2024.5/bin/$APPTAINER_NAME ]; then
+    exec $APPTAINER_NAME "$@"
+else
+  /bin/echo -e "This Apptainer image cannot provide a single entrypoint. Please use \"apptainer exec $APPTAINER_NAME <cmd>\", where <cmd> is one of the following:\n"
+  exec echo biom qiime
+fi
